@@ -1,0 +1,5 @@
+Arduino UNO                 SG-5010 Servo
++5V    --------------------> Red wire (VCC)
+GND    --------------------> Brown/Black wire (GND)
+D9     --------------------> Orange/Yellow wire (Signal)
+

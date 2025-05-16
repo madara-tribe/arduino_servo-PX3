@@ -1,0 +1,25 @@
+# python3
+Asks you to input an angle (0–180).
+
+Sends it via serial to Arduino.
+
+Arduino moves the servo accordingly!
+
+
+#  flow
+Python PC --------------> Arduino --------------> SG-5010 Servo
+Send "90" (for example)     Read 90       →     Move servo to 90 degrees
+
+# detail
+Baudrate	Must be 9600 both Arduino and Python
+Ending	Send \n (newline) to Arduino
+Wait	After opening serial port, time.sleep(2) to let Arduino reboot
+Input Checking	Python checks for valid 0-180 input
+
+# sample input
+Baudrate	Must be 9600 both Arduino and Python
+Ending	Send \n (newline) to Arduino
+Wait	After opening serial port, time.sleep(2) to let Arduino reboot
+Input Checking	Python checks for valid 0-180 input
+
+
