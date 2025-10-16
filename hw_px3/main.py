@@ -17,7 +17,7 @@ class AngleForwarder(Node):
 
         # --- Parameters (updated defaults) ---
         self.declare_parameter('serial_port', '/dev/ttyACM0')
-        self.declare_parameter('baud', 115200)          # <- 115200bps
+        self.declare_parameter('baud', 9600)          # <- 115200bps
         self.declare_parameter('min_interval_s', 0.02)  # <- faster follow
         self.declare_parameter('invert_angle', True)    # <- send 180-angle
         self.declare_parameter('deadband_deg', 2.0)     # <- ±2°

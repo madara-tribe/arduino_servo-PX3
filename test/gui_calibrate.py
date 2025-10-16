@@ -6,7 +6,7 @@ from tkinter import messagebox
 
 # === Settings ===
 ARDUINO_PORT = "/dev/ttyACM0"
-BAUD_RATE = 115200          # Arduino と一致
+BAUD_RATE = 9600
 INVERT_ANGLE = True         # PC側で反転（Arduinoは反転しない）
 
 ser = None
