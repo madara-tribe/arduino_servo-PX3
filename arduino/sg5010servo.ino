@@ -2,7 +2,7 @@
 #include <Servo.h>
 
 #define SERVO_PIN    9
-#define BAUD         115200
+#define BAUD         9600
 #define MIN_US       500
 #define MAX_US       2500
 
