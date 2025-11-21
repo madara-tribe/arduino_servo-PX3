@@ -1,0 +1,52 @@
+# (1) AS5600 と Arduino の接続（配線）
+# 基本：AS5600 は I2C。VCC, GND, SDA, SCL の4本を接続する。
+#  例：Arduino UNO / Nano
+#   - AS5600 VCC → 5V（または 3.3V, モジュール仕様に従う）
+#   - AS5600 GND → GND
+#   - AS5600 SDA → A4 (SDA)
+#   - AS5600 SCL → A5 (SCL)
+#  例：Arduino MEGA
+#   - SDA → 20, SCL → 21
+#  例：Leonardo/Micro
+#   - SDA → D2, SCL → D3（基板のSDA/SCL表示に従う）
+# メモ：
+#  - AS5600ブレークアウトは多くの場合、I2Cプルアップ抵抗を実装済み。未実装なら 4.7k〜10kΩ を VCC へ。
+#  - 磁石は「径方向着磁（diametric）」をセンサ正面（ICの上）に 1〜2mm 程度のギャップで配置する。
+#  - 5Vサーボを同時使用する場合は、サーボ電源は別系統(5V, 1〜2A)推奨。GNDはArduinoと共通化。
+
+# (2) 遵守事項・注意点（トラブル防止）
+#  - 共有GND必須：Arduino、AS5600、サーボ電源の GND を共通にする。
+#  - サーボ電源：Arduinoの5Vピンからサーボへ直接給電しない（リセットや通信不良の原因）。
+#  - 磁石検出：AS5600 STATUSのMD/ML/MHで磁場状態を確認（MD=1:検出, ML=1:弱い, MH=1:強すぎ）。
+#  - 配線長：I2Cは短く。長い場合はツイスト・適切なプルアップ。ノイズ源（サーボ線）と束ねない。
+#  - レベル：多くのAS5600モジュールは5VトレラントなI2Cバッファを持つが、仕様書/モジュール表記を必ず確認。
+#  - ソフト面：I2Cアドレス(0x36)／AS5600L(0x40-0x43)を意識。読み出しは RAW_ANGLE(0x0C/0x0D)が基本。
+#  - 物理寸法：3Dプリント治具に収める場合、穴寸法は実測に合わせて余裕(±0.2〜0.5mm)を持たせる。
+
+# (3) テストに必要な情報（ポート・アドレス・サーボ動作の要点）
+# シリアルポート（例）
+#  - Linux:   ls /dev/ttyACM*  /dev/ttyUSB*
+#  - macOS:   ls /dev/tty.usbmodem*  /dev/tty.usbserial*
+#  - 追加:    python -m serial.tools.list_ports
+#
+# I2Cアドレス
+#  - AS5600   : 0x36（標準）
+#  - AS5600L  : 0x40〜0x43（ジャンパ設定や基板で変化）
+#
+# Telemetrix 側の I2Cポート番号（本スクリプトでは 1 と 0 を試す想定）
+#  - 推奨: まず --i2c 1 で実行、ダメなら --i2c 0 を試す
+#
+# サーボを一緒に試す場合（Arduino側の考え方）
+#  - 信号線：例として D9（Servo ライブラリのデフォ例でよく使われる）
+#  - 電源：サーボ用 5V 外部電源（1〜2A）→ サーボ赤線、GND共通 → サーボ黒/茶線・Arduino GND
+#  - Arduino IDE: [File]→[Examples]→[Servo]→[Sweep] で単体動作確認→角度基準を作る
+#
+# 依存関係（Python 側/PC 側） ※TelemetrixでAS5600を読む場合
+pip install --upgrade telemetrix pyserial
+#
+# 実行例（後述の wiring_check.py を使用）
+#  - Linux:  python3 wiring_check.py --serial /dev/ttyACM0 --i2c 1
+#  - Win  :  python  wiring_check.py --serial COM3         --i2c 0
+#  - AS5600Lも探索:  --try-l を付ける
+
+

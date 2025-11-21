@@ -1,0 +1,85 @@
+import serial
+import time
+import re
+
+PORT = '/dev/ttyACM0'    # ← change for your system
+BAUD = 9600
+TIMEOUT = 3.0
+
+# REPORT target:XX, as5600:YY.YY, raw:ZZ.ZZ, mag:OK
+REPORT_RE = re.compile(
+    r'REPORT\s+target:(-?\d+),\s*as5600:([0-9.]+),\s*raw:([0-9.]+),\s*mag:([A-Z]+)'
+)
+
+def open_serial(port=PORT, baud=BAUD, timeout=TIMEOUT):
+    ser = serial.Serial(port, baud, timeout=timeout)
+    ser.reset_input_buffer()
+    ser.reset_output_buffer()
+    return ser
+
+def write_line(ser, s: str):
+    ser.write((s + '\n').encode('utf-8'))
+
+def wait_banner(ser, keyword="READY", timeout=3.0):
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        line = ser.readline().decode('utf-8', errors='ignore').strip()
+        if not line:
+            continue
+        if keyword in line:
+            return True
+        print(f'[Arduino] {line}')
+    return False
+
+def send_and_wait_report(ser, cmd: str):
+    write_line(ser, cmd)
+    t0 = time.time()
+    while True:
+        line = ser.readline().decode('utf-8', errors='ignore').strip()
+        if not line:
+            if time.time() - t0 > TIMEOUT:
+                raise TimeoutError(f'Timeout waiting for REPORT after "{cmd}"')
+            continue
+        m = REPORT_RE.match(line)
+        if m:
+            target = int(m.group(1))
+            mapped = float(m.group(2))  # mapped to 0..180 after CAL
+            raw    = float(m.group(3))  # raw 0..360
+            mag    = m.group(4)
+            return target, mapped, raw, mag
+        else:
+            print(f'[Arduino] {line}')
+
+def goto_angle(ser, deg: int):
+    return send_and_wait_report(ser, f'GOTO {deg}')
+
+def sweep(ser, start=0, end=180, step=10, delay_s=0.2):
+    for a in range(start, end+1, step):
+        target, mapped, raw, mag = goto_angle(ser, a)
+        print(f'Commanded {target:3d}°, AS5600 mapped {mapped:6.2f}° | raw {raw:6.2f}° | mag {mag}')
+        time.sleep(delay_s)
+
+if __name__ == '__main__':
+    ser = open_serial()
+    try:
+        wait_banner(ser, "READY", timeout=3.0)
+
+        # --- Auto calibration ---
+        print('Calibrating (moves to 0° and 180° once)...')
+        write_line(ser, 'CAL')
+        # Read back whatever CAL prints
+        t0 = time.time()
+        while time.time() - t0 < 3.0:
+            line = ser.readline().decode('utf-8', errors='ignore').strip()
+            if not line:
+                continue
+            print(f'[Arduino] {line}')
+            if line.startswith('CAL OK') or line.startswith('CAL ERR'):
+                break
+
+        # --- Required sweep: 0..180 by 10° ---
+        sweep(ser, 0, 180, 10)
+
+    finally:
+        ser.close()
+

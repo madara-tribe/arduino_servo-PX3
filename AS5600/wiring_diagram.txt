@@ -1,0 +1,29 @@
+### AS5600 4-wire (your cable, inserted from "left side")
+┌───────────────┬────────────────────┬──────────────────────────────┐
+│ Wire (color)  │ AS5600 signal      │ Arduino UNO/Nano connection  │
+├───────────────┼────────────────────┼──────────────────────────────┤
+│ Yellow        │ SCL                │ A5  (SCL)                    │
+│ Blue          │ SDA                │ A4  (SDA)                    │
+│ Black         │ GND                │ GND                          │
+│ Red           │ VCC                │ 3.3 V  (or 5 V per module)   │
+└───────────────┴────────────────────┴──────────────────────────────┘
+Notes:
+- UNO/Nano: SDA=A4, SCL=A5. (On many boards there are also dedicated SDA/SCL pins.) :contentReference[oaicite:2]{index=2}
+- AS5600 modules typically accept **3.3 V or 5 V** (check your board’s silk/manual). :contentReference[oaicite:3]{index=3}
+- Keep I²C wires short and twisted if possible. Most breakout boards already include pull‑ups.
+
+
+### AS5600 4-wire and servo
+External 5V PSU (+) ───────► Servo RED (V+)
+External 5V PSU (GND) ──┬──► Servo BROWN/BLACK (GND)
+                         ├──► Arduino GND
+                         └──► AS5600 GND
+
+Arduino D9  ───────────────► Servo ORANGE/YELLOW (Signal)
+Arduino 3.3V or 5V ───────► AS5600 VCC  (match your module spec)
+Arduino A4  ───────────────► AS5600 SDA
+Arduino A5  ───────────────► AS5600 SCL
+
+* Do NOT power the servo from the Arduino 5V pin if the servo draws real current.
+* Keep all grounds tied together (servo PSU GND ↔ Arduino GND ↔ AS5600 GND).
+
