@@ -23,6 +23,10 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 
 - 「ツール > ボード > ボードマネージャ」から  
   **ESP8266 by ESP8266 Community** をインストール
+  ツール > ライブラリを管理… で「**Telemetrix4ESP8266**」を検索してインストール
+  
+- スケッチ例から ESP8266 用サーバを開く
+  ファイル > スケッチ例 > Telemetrix4ESP8266 > Telemetrix4ESP8266WiFi などを選ぶ
 
 ### 1.3 ツール設定の例（Generic ESP8266 Module）
 
