@@ -1,28 +1,18 @@
-# arduino servo control for HW (PX3)
+# Arduino Serial Tools
 
-this repository belong to ROS2 Python package. you can control an Arduino-connected servo motor via serial communication. 
+This repository contains a collection of **Arduino-based serial tools and helper libraries**.  
+They are designed primarily for **hardware control**, especially in robotics projects where software and hardware need to work tightly together.
 
-This package enables both hardware-level actuation and software-based calibration of servo angles 
+## Purpose
 
-# Features
-- Serial communication with Arduino
-Easily send servo angle commands to an Arduino 
+- Provide reusable **serial communication tools** for Arduino-compatible boards.
+- Offer small, focused **helper modules for hardware control** (servos, sensors, etc.).
+- Serve as a base for **robotics experiments**, including both:
+  - **SW (software)**: control logic, communication, prototypes.
+  - **HW (hardware)**: motors, servos, angle sensors, and other devices.
 
-- Hardware control via software
-Integrate servo actuation into automated software pipelines for physical control tasks.
+## Usage (high-level)
 
-- Interactive angle calibration (GUI)
-with Tkinter GUI, you can adjust the servo angle during setup or test phase.
-
-# How to use
-
-```
-# adjust angle with GUI
-$ python3 gui_calibrate.py
-
-# run as test
-python3 main.py
-
-# if you need to use ros2 subscriber or publisher, modify main.py and run
-$ ros2 run hw_px3 hw_px3
-```
+- Clone this repository into your Arduino libraries folder (or include it in your project).
+- Open the provided examples (`File > Examples > ...`) in the Arduino IDE.
+- Upload to your Arduino-compatible board and connect your hardware (servos, sensors, etc.) according to the wiring diagrams.
