@@ -1,0 +1,4 @@
+servo red ---------ESP-WROOM-02 5V
+servo brawn --------- ESP-WROOM-02 GND
+servo yellow -------------- N pin (unknown)
+
