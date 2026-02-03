@@ -1,0 +1,43 @@
+
+## step until compile
+# 1 - prepare Arduino IDE
+sudo ~/Downloads/arduino-ide_2.3.7_Linux_64bit.AppImage
+
+# 2) udev ルールで USB/DFU の権限を付与
+sudo tee /etc/udev/rules.d/99-arduino-nano-esp32.rules >/dev/null <<'EOF'
+SUBSYSTEM=="usb", ATTR{idVendor}=="2341", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="2341", ATTR{idProduct}=="0070", MODE="0666", GROUP="plugdev"
+EOF
+
+# 3) udev を反映
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+# 4 add myself to group of plugdev
+sudo usermod -aG plugdev hagi
+
+# 5
+log in / log out
+
+# 6
+[Tools] => [Manage Libraies] => install
+=> Adafruit SSD1306
+=> Adafruit Neopixel
+
+# 7
+Tools → Board: Arduino Nano ESP32
+Tools → Port: /dev/ttyACM0
+
+# 8
+download zip from 
+https://files.waveshare.com/upload/d/d8/ST_Servo.zip
+
+I put ST_Servo.zip to the path [Arduino/libraries/~]
+$ unzip ST_Servo.zip
+$ cp -r ST_Servo/SCServo ../Arduino/libraries/
+$ cp -r ServoDriverST ../Arduino/
+
+
+# 9 - BOOT mode
+there is white botton on esp32 board and push 2 times for letting esp32 BOOT mode
+
