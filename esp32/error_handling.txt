@@ -1,0 +1,33 @@
+i tried all possible causes and 1 and 2 is the problem of this time.
+I did as error handling below.
+
+
+## error handling
+for 2
+I inserted cable with oppsite side.
+
+for 1
+after compiling, I pull out the plug from esp32 (not PC) and inseted again.
+pushing white botton 1 times, message appear. somethimes it does not work out good. in that case I push several time (never push 2 times repetedly)
+
+## order to follow
+=> connect to wifi with 2.4GHz
+
+## causes
+1.=> arduino can not  be recognized well
+this is the problem
+2.=> 差し込み口逆
+this is the proiblem
+3. => dmsegのコマンドlogにヒントある
+× tried
+4. => wired message when to compile measn taht params are diferrent
+× tried
+5.=> board is wrong as esp32 
+× コンパイルできるてる
+6.=> dfu :認識されない問題　
+× boot modeで書き込めてるから
+7. => usbケーブルが違う
+× 認識されてる、コンパイルも上手くいってる
+8. => serial port
+× boot 時に認識されずに、一回押せばpath出て、茶色のエラーも消えるから。
+
