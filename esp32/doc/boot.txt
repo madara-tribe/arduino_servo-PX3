@@ -1,0 +1,4 @@
+## to be BOOT mode 
+=> push white button 2 times
+## release BOOT mode 
+=> push white buton 1 times

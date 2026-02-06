@@ -41,3 +41,5 @@ $ cp -r ServoDriverST ../Arduino/
 # 9 - BOOT mode
 there is white botton on esp32 board and push 2 times for letting esp32 BOOT mode
 
+## reference 
+https://www.waveshare.com/wiki/ST3215-HS_Servo_Motor?srsltid=AfmBOoqfkcxjw8yEWhGmYChYwOeWYuJQtW5db8YPGdqVqsIl6J4T-vpU

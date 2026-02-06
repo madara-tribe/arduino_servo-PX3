@@ -1,0 +1,27 @@
+### wiring ###
+Arduino Nano ESP32 (ESP32-S3)            Bus Servo Driver (Akizuki 131227)
+---------------------------------------------------------------------------
+GND   --------------------------------->  GND
+RX0 (D0, RX_PIN=0) --------------------->  RX
+TX1 (D1, TX_PIN=1) --------------------->  TX
+
+Bus Servo Driver  <--------------------->  ST3215-HS
+(3-pin servo port “D V G”)                 (3-wire bus servo cable)
+D (DATA) --------------------------------> DATA
+V (V+)   --------------------------------> V+
+G (GND)  --------------------------------> GND
+
+### RX and TX number in the code ###
+static const int RX_PIN = 0;   // D0 (RX0)
+static const int TX_PIN = 1;   // D1 (TX1)
+
+### inserted cap ###
+inserted line1 and line2
+[A]  ●  ●   ← line1
+     ●  ●   ← line2
+[B]  ●  ●   ← line3
+
+
+
+
+
