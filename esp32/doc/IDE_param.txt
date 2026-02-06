@@ -1,4 +1,3 @@
-
 ## step until compile
 # 1 - prepare Arduino IDE
 sudo ~/Downloads/arduino-ide_2.3.7_Linux_64bit.AppImage
@@ -19,29 +18,13 @@ sudo usermod -aG plugdev hagi
 # 5
 log in / log out
 
-# 6
-[Tools] => [Manage Libraies] => install
-=> Adafruit SSD1306
-=> Adafruit Neopixel
 
-# 7
+# 6
 Tools → Board: Arduino Nano ESP32
 Tools → Port: /dev/ttyACM0
 
-# 8
-download zip from 
-https://files.waveshare.com/upload/d/d8/ST_Servo.zip
 
-I put ST_Servo.zip to the path [Arduino/libraries/~]
-$ unzip ST_Servo.zip
-$ cp -r ST_Servo/SCServo ../Arduino/libraries/
-$ cp -r ServoDriverST ../Arduino/
-
-
-# 9 - BOOT mode
+# 7 - BOOT mode
 there is white botton on esp32 board and push 2 times for letting esp32 BOOT mode
 
-## reference 
-https://forum.arduino.cc/t/control-servo-st3215-with-esp32-wroom-32d/1393738
 
-https://www.waveshare.com/wiki/ST3215-HS_Servo_Motor?srsltid=AfmBOoqfkcxjw8yEWhGmYChYwOeWYuJQtW5db8YPGdqVqsIl6J4T-vpU

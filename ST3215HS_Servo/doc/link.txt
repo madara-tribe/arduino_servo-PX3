@@ -1,5 +1,3 @@
-give me the images of these items
-also write the wiring drawing according to wiring.txt
 ## bus drive
 https://akizukidenshi.com/catalog/g/g131227/
 
