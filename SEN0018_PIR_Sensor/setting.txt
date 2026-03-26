@@ -1,0 +1,2 @@
+Tools > Board > Arduino AVR Boards > Arduino Uno
+
