@@ -23,7 +23,7 @@ from serial.tools import list_ports
 class PIRValidator:
     """Standalone PIR sensor validator."""
     
-    def __init__(self, port: Optional[str] = None, baudrate: int = 115200):
+    def __init__(self, port: Optional[str] = None, baudrate: int = 96000):
         self.port = port or self._auto_detect_port()
         self.baudrate = baudrate
         self.serial: Optional[serial.Serial] = None
