@@ -147,6 +147,12 @@ void handleSerial() {
   else if (cmd.startsWith("CFG,")) {
     parseCFG(cmd);
   }
+  else if (cmd == "TRIGGER") {
+    // test_trigger.py からの手動トリガー (RTC無しテスト用)
+    Serial.println("[TRIGGER] Manual trigger received.");
+    doWater();
+    done_today = false; // テスト用: 繰り返し実行できるようリセット
+  }
   else if (cmd.length() > 0) {
     Serial.print("[WARN] Unknown command: ");
     Serial.println(cmd);
