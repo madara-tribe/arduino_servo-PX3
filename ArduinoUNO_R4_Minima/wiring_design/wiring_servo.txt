@@ -1,0 +1,35 @@
+========================================
+ Arduino UNO R4 Minima + SG90 Servo
+ 配線テキスト
+========================================
+
+【配線まとめ（3本）】
+
+  SG90 サーボ     Arduino UNO R4 Minima
+  ──────────      ─────────────────────
+  Signal (橙)  →  D9（PWMピン・~マーク付き）
+  VCC    (赤)  →  5V
+  GND    (茶)  →  GND
+
+【注意事項】
+- D9は基板右端の列にある。~マーク付きのピンがPWM対応。
+- サーボの3本線はコネクタで色分けされている:
+    橙 = Signal（PWM制御信号）
+    赤 = VCC（電源 5V）
+    茶 = GND（グランド）
+- ブレッドボードを使う場合:
+    ブレッドボードにサーボのコネクタを差し、
+    ジャンパ線でArduinoの各ピンへ接続する。
+
+【動作確認】
+- water_timer.ino をUpload後、
+  シリアルモニタ（9600baud）で
+  "[INFO] Servo initialized: CLOSE" が表示されればOK
+- テストモード（RTC無し）では起動10秒後に
+  サーボが180°回転（OPEN）→ 2秒後に0°（CLOSE）する
+
+【コード上の設定箇所】
+  const int SERVO_PIN  = 9;      // サーボ信号ピン
+  const int SERVO_CLOSE = 0;     // 閉じる角度
+  const int SERVO_OPEN  = 180;   // 開く角度
+  const long WATER_MS   = 2000;  // 給水時間[ms]

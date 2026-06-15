@@ -1,0 +1,67 @@
+========================================
+ Arduino UNO R4 Minima + DS3231 RTC
+ + SG90 Servo 全体配線テキスト
+========================================
+
+【全配線まとめ（7本）】
+
+  デバイス         ピン         Arduino UNO R4 Minima
+  ─────────────    ──────────   ─────────────────────
+  DS3231 RTC       VCC       →  3.3V  ⚠️ 5Vは不可
+  DS3231 RTC       GND       →  GND
+  DS3231 RTC       SDA       →  SDA
+  DS3231 RTC       SCL       →  SCL
+  SG90 Servo       Signal(橙) →  D9（PWM ~マーク）
+  SG90 Servo       VCC   (赤) →  5V
+  SG90 Servo       GND   (茶) →  GND
+
+【GNDの共通化（重要）】
+  Arduinoには複数のGNDピンがある。
+  RTC と Servo のGNDをそれぞれ別のGNDピンに繋いでもよいし、
+  ブレッドボードのGNDレールで共通化してもよい。
+
+【推奨ブレッドボード接続順序】
+  1. ブレッドボードの電源レール:
+     Arduino 5V    → ブレッドボード (+) レール
+     Arduino 3.3V  → 別の (+) レール or 直接RTCへ
+     Arduino GND   → ブレッドボード (-) レール
+
+  2. RTC接続:
+     RTC VCC → 3.3Vライン
+     RTC GND → GNDライン
+     RTC SDA → Arduino SDA（直接）
+     RTC SCL → Arduino SCL（直接）
+
+  3. Servo接続:
+     Servo Signal → Arduino D9（直接）
+     Servo VCC    → 5Vライン
+     Servo GND    → GNDライン
+
+【⚠️ 重要注意事項】
+- RTCのVCCは3.3V（R4 MinimaはI2Cが3.3V動作）
+- ServoのVCCは5V（SG90は5V動作）
+- 2つのデバイスで電源電圧が異なるので注意
+
+【ピン使用一覧】
+  Arduino ピン     用途
+  ─────────────    ──────────────────────
+  5V               Servo VCC
+  3.3V             RTC VCC
+  GND              RTC GND / Servo GND（共通）
+  D9 (~PWM)        Servo Signal
+  D12              Buzzer +（オプション）
+  SDA              RTC SDA（I2C）
+  SCL              RTC SCL（I2C）
+
+【動作フロー】
+  [旅行前]
+    1. water_timer.ino の #define USE_RTC を有効化
+    2. Upload後、python set_time.py で時刻設定
+    3. PCを外してACアダプタのみ接続
+
+  [毎朝7:00（自動）]
+    RTC → Arduino → Servo OPEN(180°) → 2秒後 CLOSE(0°)
+
+  [RTC購入前テスト]
+    // #define USE_RTC（コメントアウト状態）
+    起動10秒後にServoが動作する動作確認モード

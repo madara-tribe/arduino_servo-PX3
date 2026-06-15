@@ -1,0 +1,42 @@
+========================================
+ Arduino UNO R4 Minima + DS3231 RTC
+ 配線テキスト
+========================================
+
+【配線まとめ（4本）】
+
+  DS3231 RTC      Arduino UNO R4 Minima
+  ──────────      ─────────────────────
+  VCC          →  3.3V  ⚠️ 5VではなくR4は3.3V I2C動作
+  GND          →  GND
+  SDA          →  SDA（基板に「SDA」と印字）
+  SCL          →  SCL（基板に「SCL」と印字）
+
+【未接続ピン（今回不使用）】
+  SQW  → 未接続
+  32K  → 未接続
+
+【⚠️ R4 Minima特有の重要注意】
+- R3はI2Cが5V動作だったが、R4 MinimaのI2Cは3.3V動作。
+- VCCは必ず「3.3V」ピンに接続すること。
+- 「5V」に繋ぐとモジュールが破損する可能性あり。
+
+【バックアップ電池】
+- 使用電池: CR1220（3V リチウムコイン電池）
+- 電池は付属しないため別途購入が必要。
+- 挿入方向: ＋マークが見える向きで基板裏側へ挿入。
+- 電池寿命: 新品CR1220で約5年以上の時刻保持が可能。
+
+【I2Cプロトコルについて】
+- SDA: データ線（Serial Data）
+- SCL: クロック線（Serial Clock）
+- Arduinoとは2本の信号線（+電源+GND）で通信する。
+- コード上では RTClib ライブラリが自動でI2Cを制御する。
+
+【動作確認】
+1. #define USE_RTC のコメントを外してUpload
+2. python set_time.py /dev/ttyACM0 を実行
+3. シリアルモニタで以下を確認:
+   [ACK] Time set.
+   [INFO] RTC time: YYYY/MM/DD HH:MM:SS
+   [INFO] RTC mode: ON
