@@ -4,11 +4,11 @@
  test_trigger.py — RTC無し・PC時刻でサーボ動作テスト
 =============================================================
 使い方:
-  python test_trigger.py --in 10              # 今から10秒後
-  python test_trigger.py --time 14:30         # 14:30 にトリガー
+  python test_trigger.py --in 10                # 今から10秒後
+  python test_trigger.py --time 14:30           # 14:30 にトリガー
   python test_trigger.py --time 07:00 --repeat  # 毎日繰り返し
-  python test_trigger.py --time 14:30 --port COM3        # Windows
-  python test_trigger.py --time 14:30 --port /dev/ttyACM0  # Linux/Mac
+  python test_trigger.py --time 14:30 --port COM3         # Windows
+  python test_trigger.py --time 14:30 --port /dev/ttyACM0 # Linux/Mac
 =============================================================
 """
 
@@ -55,33 +55,35 @@ def calc_trigger_time(args):
             print(f"[INFO] 指定時刻は過去のため翌日に設定: "
                   f"{trigger.strftime('%Y-%m-%d %H:%M:%S')}")
         return trigger, args.repeat
-    trigger = now.replace(minute=0, second=0, microsecond=0) \
-              + datetime.timedelta(hours=1)
+    trigger = (now.replace(minute=0, second=0, microsecond=0)
+               + datetime.timedelta(hours=1))
     return trigger, False
 
 
-def open_serial(port):
+def open_serial_and_wait_boot(port):
     """
-    DTR自動リセットを回避してシリアルポートを開く。
-    R4 Minimaはopen時にDTRがアサートされるとリセットがかかるため、
-    dsrdtr=True / rtscts=False で制御しつつ、
-    open後にDTRを明示的にFalseにしてリセットを防ぐ。
+    DTR操作なしでシリアルポートをオープンし、
+    Arduinoが起動済みであることを前提に通信を開始する。
+
+    【原因確定済み】
+    DTR操作（ser.dtr=True/False）はArduino R4 Minimaを
+    リセットさせてしまい、コマンド送信タイミングと競合する。
+    DTR操作なし・sleep(3)のみで安定動作することを確認済み。
     """
-    ser = serial.Serial()
-    ser.port     = port
-    ser.baudrate = BAUDRATE
-    ser.timeout  = 3
-    ser.dtr      = False   # ← open前にDTRをFalseに固定
-    ser.rts      = False
-    ser.open()
-    time.sleep(0.1)
+    print(f"[INFO] ポートオープン中: {port}")
+
+    # DTR操作なし・そのままオープン
+    ser = serial.Serial(port, BAUDRATE, timeout=1)
+
+    # オープン直後の小さなグリッチを吸収するため3秒待機
+    print(f"[INFO] 接続安定待ち (3秒)...")
+    time.sleep(3)
     ser.reset_input_buffer()
-    ser.reset_output_buffer()
+    print(f"[INFO] 接続完了: {port}")
     return ser
 
 
 def safe_write(ser, data: bytes, label=""):
-    """書き込み前にポート状態を確認してから送信する"""
     try:
         ser.reset_output_buffer()
         ser.write(data)
@@ -94,8 +96,7 @@ def safe_write(ser, data: bytes, label=""):
         return False
 
 
-def read_response(ser, timeout=5, stop_on=("Done", "WATER", "ACK", "ERROR")):
-    """指定キーワードが来るか timeout 秒まで読み続ける"""
+def read_response(ser, timeout=5, stop_on=("Done", "ACK", "ERROR")):
     deadline = time.time() + timeout
     lines = []
     while time.time() < deadline:
@@ -117,16 +118,20 @@ def send_cfg(ser, args, trigger_time):
     cfg = (f"CFG,{trigger_time.hour},{trigger_time.minute},"
            f"{args.open_deg},{args.close_deg},{args.water_ms}\n")
     if safe_write(ser, cfg.encode(), f"CFG: {cfg.strip()}"):
-        read_response(ser, timeout=3, stop_on=("ACK", "ERROR"))
+        resp = read_response(ser, timeout=3, stop_on=("ACK", "ERROR"))
+        if not any("ACK" in l for l in resp):
+            print("[WARN] CFG ACKが返りませんでした。Arduinoが受信できていない可能性あり。")
 
 
 def send_trigger(ser):
-    # 送信直前にバッファをクリアして状態をリフレッシュ
     ser.reset_input_buffer()
     ser.reset_output_buffer()
     time.sleep(0.05)
     if safe_write(ser, b"TRIGGER\n", "TRIGGER コマンド"):
-        read_response(ser, timeout=8, stop_on=("Done", "ERROR"))
+        resp = read_response(ser, timeout=8,
+                             stop_on=("Done", "ERROR", "WATER"))
+        if not resp:
+            print("[WARN] Arduinoからの応答なし。TRIGGERが届いていない可能性あり。")
 
 
 def countdown(trigger_time):
@@ -165,9 +170,7 @@ def main():
     print("[INFO] Ctrl+C で終了\n")
 
     try:
-        ser = open_serial(args.port)
-        print(f"[INFO] 接続完了: {args.port} (DTRリセット回避済み)")
-        time.sleep(1)
+        ser = open_serial_and_wait_boot(args.port)
 
         send_cfg(ser, args, trigger_time)
 
