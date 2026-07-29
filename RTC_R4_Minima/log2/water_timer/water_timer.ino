@@ -3,7 +3,7 @@
 //  RTC購入後: 下の1行のコメントアウトを外すだけ
 // ============================================================
 
-// #define USE_RTC   // ← RTC購入後ここを有効化
+#define USE_RTC   // ← RTC購入後ここを有効化
 
 #ifdef USE_RTC
   #include <Wire.h>
@@ -162,6 +162,12 @@ void handleSerial() {
 // ===== Setup =====
 void setup() {
   Serial.begin(9600);
+  // R4 MinimaはネイティブUSBのため、PC側の認識を最大3秒待つ
+  // （これがないと起動直後のログがPCに届かず消える）
+  unsigned long serial_wait = millis();
+  while (!Serial && millis() - serial_wait < 3000);
+
+  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(SERVO_PIN,  OUTPUT);
   pinMode(BUZZER_PIN, OUTPUT);
   servoWrite(SERVO_PIN, servo_close);
@@ -170,8 +176,16 @@ void setup() {
 #ifdef USE_RTC
   Wire.begin();
   if (!rtc.begin()) {
-    Serial.println("[ERROR] RTC not found. Check wiring.");
-    while (1);
+    // RTCが見つからない場合:
+    //   - オンボードLEDを高速点滅（シリアル無しでも判別可能）
+    //   - エラーメッセージを2秒毎に連呼（後からモニタを開いても見える)
+    while (1) {
+      Serial.println("[ERROR] RTC not found. Check wiring: VIN->3.3V GND->GND SCL->SCL SDA->SDA");
+      digitalWrite(LED_BUILTIN, HIGH); delay(150);
+      digitalWrite(LED_BUILTIN, LOW);  delay(150);
+      digitalWrite(LED_BUILTIN, HIGH); delay(150);
+      digitalWrite(LED_BUILTIN, LOW);  delay(1550);
+    }
   }
 
   // 起動後3秒間 SET/CFG コマンド待ち
